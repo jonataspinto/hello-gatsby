@@ -1,16 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useStaticQuery, graphql } from 'gatsby'
 
 import * as S from './styles';
 
 export default function Avatar() {
-  const [imgProfile, setImgProfile] = useState()
-  useEffect(() => {
-    fetch('https://api.github.com/users/jonataspinto').then(res=> res.json()).then(res=>{
-      const {avatar_url} = res
-      setImgProfile(avatar_url)
-    })
-  }, [imgProfile])
+
+  const { imgProfile } = useStaticQuery(
+    graphql`
+      query {
+        imgProfile: file(relativePath: {eq: "profile.jpeg" }) {
+          childImageSharp {
+            fixed(width: 80, height: 80) {
+              ...GatsbyImageSharpFixed
+            }
+          }
+        }
+      }
+    `
+  )
+
   return (
-    <S.Avatar src={imgProfile} loading="lazy" alt="profile"/>
+    <S.Avatar fixed={imgProfile.childImageSharp.fixed} />
   );
 }
